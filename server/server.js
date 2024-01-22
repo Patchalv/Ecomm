@@ -34,6 +34,8 @@ app.use('/users', userRouter);
 
 
 
+
+
 // Make server listen to the port
     app.listen(PORT, () => {
         console.log(`Server is listening on port ${PORT}`);
