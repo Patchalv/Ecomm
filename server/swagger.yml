@@ -1,0 +1,340 @@
+openapi: 3.0.1
+info:
+  description: >-
+    A server for PERN e-commerce app.  You can find out more about it at
+    [https://github.com/Patchalv/Ecomm](https://github.com/Patchalv/Ecomm).
+  version: 1.0.0
+  title: Ecomm PERN Store
+  contact:
+    email: p.alvarezeades@gmail.com
+  license:
+    name: MIT License
+    url: https://opensource.org/licenses/MIT
+servers:
+  - url: localhost:4000/
+tags:
+  - name: auth
+    description: User Authentication and Authorization
+  - name: users
+    description: Users API
+  - name: products
+    description: Products API
+  - name: carts
+    description: Carts API
+  - name: orders
+    description: Orders API
+paths:
+  /auth/register:
+    post:
+      tags:
+        - auth
+      summary: Create a new user account
+      description: ''
+      requestBody:
+        description: User details
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewUser'
+      responses:
+        '200':
+          description: Returns object with new user details.
+        '406':
+          description: Missing input. All fields required.
+        '409':
+          description: User with this email already exists.
+  /auth/login:
+    post:
+      tags:
+        - auth
+      summary: Login with email and password
+      description: 'Test user: email - john@email.com password - JohnsPassword'
+      requestBody:
+        description: User login details
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginUser'
+      responses:
+        '200':
+          description: >-
+            Logged in/authenticated successfully. Returns user details, JWT
+            token and refreshToken
+  /users/{user_id}:
+    get:
+      tags:
+        - users
+      summary: Find User by ID
+      description: ''
+      parameters:
+        - in: path
+          name: user_id
+          schema:
+            type: integer
+          required: true
+          description: Numeric ID of the user to get
+      responses:
+        '200':
+          description: Returns user details as single object
+        '404':
+          description: There is no user with that id.
+    put:
+      tags:
+        - users
+      summary: Update User by ID
+      description: ''
+      parameters:
+        - in: path
+          name: user_id
+          schema:
+            type: integer
+          required: true
+          description: Numeric ID of the user to update
+      requestBody:
+        description: User details to update (single or many)
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdatedUser'
+      responses:
+        '200':
+          description: Returns updated user details as single object
+        '400':
+          description: Email is already taken
+        '403':
+          description: You're not admin or owner of this account.
+  /products:
+    get:
+      tags:
+        - products
+      summary: Get all products
+      description: ''
+      responses:
+        '200':
+          description: Returns array of products as objects
+  /products/{product_id}:
+    get:
+      tags:
+        - products
+      summary: Find single product
+      description: ''
+      parameters:
+        - in: path
+          name: product_id
+          schema:
+            type: integer
+          required: true
+          description: Numeric ID of the product to get
+      responses:
+        '200':
+          description: Returns product details as single object
+  /carts/mine:
+    get:
+      tags:
+        - carts
+      summary: Get single cart by id (owner only)
+      description: ''
+      parameters:
+        - in: cookie
+          name: cart_id
+          schema:
+            type: integer
+          required: true
+          description: Numeric ID of the cart to find
+      responses:
+        '200':
+          description: Returns cart with products.
+    put:
+      tags:
+        - carts
+      summary: Update product in cart
+      description: ''
+      parameters:
+        - in: cookie
+          name: cart_id
+          schema:
+            type: integer
+          required: true
+          description: Numeric ID of the cart
+      requestBody:
+        description: Numeric ID of the product to update
+        required: true
+        content:
+          application/json:
+            schema:
+              required:
+                - product_id
+                - quantity
+              properties:
+                product_id:
+                  type: integer
+                  example: 9
+                quantity:
+                  type: integer
+                  example: 2
+                size:
+                  type: integer
+                  example: M
+      responses:
+        '200':
+          description: Product successfully updated.
+
+  /carts/mine/items/{cart_item_id}:
+    delete:
+      tags:
+        - carts
+      summary: Remove product from cart (owner only)
+      description: ''
+      parameters:
+        - in: path
+          name: cart_item_id
+          schema:
+            type: integer
+          required: true
+          description: Numeric ID of the cart_item to delete
+      responses:
+        '200':
+          description: Product successfully deleted.
+
+    put:
+      tags:
+        - carts
+      summary: Edit product in cart (owner only)
+      description: ''
+      parameters:
+        - in: path
+          name: cart_item_id
+          schema:
+            type: integer
+          required: true
+          description: Numeric ID of the cart_item to edit
+      responses:
+        '200':
+          description: Product successfully edited.
+
+  /carts/mine/checkout:
+    post:
+      tags:
+        - carts
+      summary: Checkout cart with products, make payment and create order (owner only)
+      description: ''
+      parameters:
+        - in: cookie
+          name: cart_id
+          schema:
+            type: integer
+          required: true
+          description: Numeric ID of the cart to find
+        - in: query
+          name: paymentInfo
+          schema:
+            type: integer
+          required: true
+          description: Payment Information
+        - in: query
+          name: user_id
+          schema:
+            type: integer
+          required: true
+          description: Numeric ID of the user
+      responses:
+        '200':
+          description: Cart successfully checked out.
+
+  /orders:
+    get:
+      tags:
+        - orders
+      summary: Get all orders by id
+      description: ''
+      parameters:
+        - in: cookie
+          name: user_id
+          schema:
+            type: integer
+          required: true
+          description: Numeric ID of the user
+      responses:
+        '200':
+          description: >-
+            Returns array of orders details as objects (id, status, total,
+            user_id)
+
+  /orders/{order_id}:
+    get:
+      tags:
+        - orders
+      summary: Get single order by id
+      description: ''
+      parameters:
+        - in: path
+          name: order_id
+          schema:
+            type: integer
+          required: true
+          description: Numeric ID of the order to find
+      responses:
+        '200':
+          description: Returns single order details (id, status, total, user_id)
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    NewUser:
+      type: object
+      properties:
+        fname:
+          type: string
+          example: John
+        lname:
+          type: string
+          example: Doe
+        email:
+          type: string
+          example: john@email.com
+        password:
+          type: string
+          example: s0m3sEcr3tP@ssW0rd
+    UpdatedUser:
+      type: object
+      properties:
+        fname:
+          type: string
+          example: John
+        lname:
+          type: string
+          example: Doe
+        email:
+          type: string
+          example: john@email.com
+        password:
+          type: string
+          example: s0m3sEcr3tP@ssW0rd
+        address:
+          type: string
+          example: 15 Pavement St
+        city:
+          type: string
+          example: London
+        state:
+          type: string
+          example: Green Gardens Court
+        country:
+          type: string
+          example: United Kingdom
+    LoginUser:
+      type: object
+      properties:
+        email:
+          type: string
+          example: john@email.com
+        password:
+          type: string
+          example: JohnsPassword
