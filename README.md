@@ -90,7 +90,6 @@ Project Link: [https://github.com/Patchalv/Ecomm-Restful-API-backend](https://gi
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
 
-https://github.com/Patchalv/Ecomm-Restful-API-backend
 [contributors-shield]: https://img.shields.io/github/contributors/Patchalv/Ecomm-Restful-API-backend.svg?style=for-the-badge
 [contributors-url]: https://github.com/Patchalv/Ecomm-Restful-API-backend/graphs/contributors
 [forks-shield]: https://img.shields.io/github/forks/Patchalv/Ecomm-Restful-API-backend.svg?style=for-the-badge
